@@ -1,0 +1,159 @@
+@import "tailwindcss";
+
+/* ── Custom Theme ── */
+@theme {
+  --color-cream: #FAFAF7;
+  --color-cream-dark: #F0EDE6;
+  --color-saffron: #C9A84C;
+  --color-saffron-deep: #B8943F;
+  --color-gold: #D4AF37;
+  --color-gold-light: #E8C547;
+  --color-royal-blue: #0A1628;
+  --color-royal-navy: #0D1B2A;
+  --color-charcoal: #0B1120;
+  --color-charcoal-light: #131D30;
+  --color-charcoal-mid: #1C2A42;
+  --color-slate-text: #94A3B8;
+
+  --font-display: 'Playfair Display', serif;
+  --font-body: 'Inter', sans-serif;
+}
+
+/* ── Base ── */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    font-family: var(--font-body);
+    margin: 0;
+    @apply bg-cream text-charcoal transition-colors duration-500;
+  }
+  .dark body,
+  body.dark {
+    @apply bg-charcoal text-white;
+  }
+}
+
+/* ── Glass Card ── */
+.glass-card {
+  @apply bg-white/70 backdrop-blur-xl border border-white/30 shadow-lg;
+}
+.dark .glass-card {
+  @apply bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl;
+}
+
+/* ── Premium Glass ── */
+.glass-premium {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+/* ── Premium gradient (royal gold) ── */
+.premium-gradient {
+  background: linear-gradient(135deg, #C9A84C 0%, #D4AF37 50%, #B8943F 100%);
+}
+.dark .premium-gradient {
+  background: linear-gradient(135deg, #D4AF37 0%, #C9A84C 50%, #B8943F 100%);
+}
+
+/* ── Royal gradient button ── */
+.btn-royal {
+  background: linear-gradient(135deg, #C9A84C 0%, #D4AF37 50%, #E8C547 100%);
+  color: #0B1120;
+  font-weight: 600;
+}
+
+/* ── Hero Gradient ── */
+.hero-gradient {
+  background: linear-gradient(135deg, #0B1120 0%, #0D1B2A 30%, #0A1628 60%, #111827 100%);
+}
+
+/* ── Cinematic Overlay ── */
+.hero-overlay {
+  background: radial-gradient(ellipse at 30% 50%, rgba(212, 175, 55, 0.08) 0%, transparent 60%),
+              radial-gradient(ellipse at 70% 30%, rgba(201, 168, 76, 0.05) 0%, transparent 50%);
+}
+
+/* ── Fare Breakdown Glass Card ── */
+.fare-glass-card {
+  @apply bg-white/70 backdrop-blur-xl border border-white/50 shadow-2xl;
+}
+.dark .fare-glass-card {
+  @apply bg-charcoal-light/50 backdrop-blur-xl border border-white/10 shadow-2xl;
+}
+
+/* ── Gujarati Cultural Pattern ── */
+.gujarati-pattern {
+  background-image: 
+    radial-gradient(circle at 20% 50%, rgba(212, 175, 55, 0.03) 0%, transparent 50%),
+    radial-gradient(circle at 80% 50%, rgba(201, 168, 76, 0.03) 0%, transparent 50%);
+}
+.dark .gujarati-pattern {
+  background-image: 
+    radial-gradient(circle at 20% 50%, rgba(212, 175, 55, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 80% 50%, rgba(201, 168, 76, 0.05) 0%, transparent 50%);
+}
+
+/* ── Footer Gujarati Border Pattern ── */
+.footer-border-pattern {
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #C9A84C, #D4AF37, #C9A84C, transparent);
+}
+.dark .footer-border-pattern {
+  background: linear-gradient(90deg, transparent, #D4AF37, #E8C547, #D4AF37, transparent);
+}
+
+/* ── Section divider ── */
+.section-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(201, 168, 76, 0.2), transparent);
+}
+.dark .section-divider {
+  background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.15), transparent);
+}
+
+/* ── Glow effect ── */
+.glow-gold {
+  box-shadow: 0 0 40px rgba(212, 175, 55, 0.15), 0 0 80px rgba(212, 175, 55, 0.05);
+}
+.dark .glow-gold {
+  box-shadow: 0 0 40px rgba(212, 175, 55, 0.2), 0 0 80px rgba(212, 175, 55, 0.08);
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #C9A84C44; border-radius: 3px; }
+.dark ::-webkit-scrollbar-thumb { background: #D4AF3744; }
+
+/* ── Particle animation ── */
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
+}
+
+.particle {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: rgba(212, 175, 55, 0.3);
+  border-radius: 50%;
+  animation: float linear infinite;
+}
+
+/* ── Timeline connector ── */
+.timeline-line {
+  background: linear-gradient(90deg, #C9A84C, #D4AF37);
+}
+.dark .timeline-line {
+  background: linear-gradient(90deg, #D4AF37, #E8C547);
+}
+
+/* ── Star rating ── */
+.star-filled { color: #D4AF37; }
+.star-empty { color: #334155; }
