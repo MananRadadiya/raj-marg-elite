@@ -4,11 +4,14 @@ import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../redux/authSlice';
 import { motion, AnimatePresence } from 'framer-motion';
 import useScrollPosition from '../hooks/useScrollPosition';
+import AISuggestModal from './AISuggestModal';
+import NotificationBell from './NotificationBell';
 
 export default function Navbar() {
   const [dark, setDark] = useState(() => localStorage.getItem('rajmarg_theme') === 'dark');
   const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [aiOpen, setAiOpen] = useState(false);
   const { user, isAuthenticated } = useSelector((s) => s.auth);
   const { bookings } = useSelector((s) => s.booking);
   const dispatch = useDispatch();
@@ -45,7 +48,8 @@ export default function Navbar() {
   const navLinks = [
     { to: '/', label: 'Home' },
     { to: '/booking', label: 'Book Ride' },
-    { to: '/driver-portal', label: 'Drivers' },
+    { to: '/tour-packages', label: 'Tours' },
+    { to: '/drivers', label: 'Drivers' },
     ...(isAuthenticated ? [{ to: '/dashboard', label: 'Dashboard' }] : []),
     ...(isAuthenticated ? [{ to: '/live-tracking', label: 'Track Ride' }] : []),
     ...(user?.role === 'admin' ? [{ to: '/admin', label: 'Admin' }] : []),
@@ -54,6 +58,7 @@ export default function Navbar() {
   const isScrolledOrNotHome = scrolled || !isHome;
 
   return (
+    <>
     <motion.nav
       initial={{ y: -100 }}
       animate={{ y: 0 }}
@@ -123,6 +128,21 @@ export default function Navbar() {
 
           {/* Right Actions */}
           <div className="flex items-center gap-2">
+            {/* AI Mode Button */}
+            <motion.button
+              whileTap={{ scale: 0.9 }}
+              whileHover={{ scale: 1.05 }}
+              onClick={() => setAiOpen(true)}
+              className={`relative w-9 h-9 rounded-xl border cursor-pointer flex items-center justify-center transition-all duration-300 group ${
+                isScrolledOrNotHome
+                  ? 'bg-gradient-to-br from-violet-500/10 to-saffron/10 dark:from-violet-500/20 dark:to-saffron/20 border-violet-500/20 dark:border-violet-400/20 text-violet-600 dark:text-violet-400'
+                  : 'bg-white/10 border-white/20 text-white hover:bg-white/20'
+              }`}
+              aria-label="AI Mode"
+            >
+              <span className="text-sm font-bold">✦</span>
+              <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-violet-500 to-saffron opacity-0 group-hover:opacity-20 blur-sm transition-opacity duration-300" />
+            </motion.button>
             {/* Booking Badge */}
             {isAuthenticated && pendingCount > 0 && (
               <Link to="/dashboard" className="relative no-underline mr-1">
@@ -135,6 +155,11 @@ export default function Navbar() {
                   {pendingCount}
                 </motion.span>
               </Link>
+            )}
+
+            {/* Notification Bell */}
+            {isAuthenticated && (
+              <NotificationBell isScrolledOrNotHome={isScrolledOrNotHome} />
             )}
 
             {/* Dark Mode Toggle */}
@@ -199,6 +224,13 @@ export default function Navbar() {
                         <div className="text-xs text-charcoal/50 dark:text-slate-text mt-0.5">{user.email}</div>
                       </div>
                       <div className="p-1.5">
+                        <Link
+                          to="/profile"
+                          onClick={() => setDropdownOpen(false)}
+                          className="flex items-center gap-2.5 px-3 py-2.5 text-sm rounded-xl hover:bg-saffron/5 dark:hover:bg-gold/5 text-charcoal dark:text-white no-underline transition-colors"
+                        >
+                          <span className="text-base">👤</span> Profile
+                        </Link>
                         <Link
                           to="/dashboard"
                           onClick={() => setDropdownOpen(false)}
@@ -301,6 +333,14 @@ export default function Navbar() {
                   {link.label}
                 </Link>
               ))}
+              {/* AI Mode Button - Mobile */}
+              <button
+                onClick={() => { setAiOpen(true); setMenuOpen(false); }}
+                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium bg-gradient-to-r from-violet-500/10 to-saffron/10 dark:from-violet-500/20 dark:to-saffron/20 text-violet-600 dark:text-violet-400 border-none cursor-pointer hover:from-violet-500/20 hover:to-saffron/20 transition-all"
+              >
+                <span>✦</span> AI Smart Suggest
+              </button>
+
               <div className="pt-3 border-t border-charcoal/5 dark:border-white/5 space-y-2">
                 {isAuthenticated ? (
                   <button
@@ -333,5 +373,9 @@ export default function Navbar() {
         )}
       </AnimatePresence>
     </motion.nav>
+
+    {/* AI Suggest Modal */}
+    <AISuggestModal isOpen={aiOpen} onClose={() => setAiOpen(false)} />
+    </>
   );
 }

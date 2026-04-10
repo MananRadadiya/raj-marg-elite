@@ -1,0 +1,294 @@
+# RajMarg Elite — Complete Project Overview
+
+## What Is This Project?
+
+**RajMarg Elite** is a **premium taxi booking web application** for **Gujarat, India**. It allows customers to book intercity taxi rides between major Gujarat cities (and Mumbai), choose from multiple car categories and driver tiers, calculate fares, make simulated payments, and track their rides — all within a polished, premium-looking single-page app.
+
+> **Tagline:** *"Gujarat's Premium Taxi Service — Book. Ride. Repeat."*
+
+---
+
+## Tech Stack
+
+| Layer | Technology | Version |
+|---|---|---|
+| **Framework** | React | 19.1 |
+| **Build Tool** | Vite | 6.3 |
+| **Routing** | React Router DOM | 7.13 |
+| **State Management** | Redux Toolkit | 2.11 |
+| **Animations** | Framer Motion | 12.34 |
+| **Styling** | Tailwind CSS | 4.2 (via `@tailwindcss/vite` plugin) |
+| **PWA Support** | vite-plugin-pwa | 1.2 |
+| **Fonts** | Google Fonts (Playfair Display, Inter, DM Sans) | — |
+
+### Not Using (No Backend)
+- No backend server / API
+- No real database — **localStorage** is used for all persistence
+- No real payment gateway — uses a **fake Razorpay modal**
+- No real authentication — uses **hardcoded demo accounts**
+- No real maps/GPS — uses a **static distance matrix**
+
+---
+
+## Project Structure
+
+```
+rajmarg-elite/
+├── index.html                    # Entry HTML (title, Google Fonts)
+├── vite.config.js                # Vite + React + TailwindCSS + PWA config
+├── package.json
+├── public/                       # Static assets
+├── src/
+│   ├── main.jsx                  # App entry — wraps with Redux Provider
+│   ├── App.jsx                   # Router + Layout (Navbar + Footer + AnimatePresence)
+│   ├── index.css                 # Global CSS — Tailwind + custom theme + glassmorphism
+│   ├── App.css                   # Additional app styles
+│   ├── assets/                   # Static assets
+│   ├── pages/                    # 9 page components
+│   │   ├── Home.jsx              # Landing page (hero + sections)
+│   │   ├── Booking.jsx           # Booking wizard page
+│   │   ├── Payment.jsx           # Payment page
+│   │   ├── Dashboard.jsx         # Customer dashboard
+│   │   ├── Login.jsx             # Login page (email + OTP)
+│   │   ├── Register.jsx          # Registration page
+│   │   ├── AdminPanel.jsx        # Admin dashboard
+│   │   ├── LiveTracking.jsx      # Live ride tracking page
+│   │   └── DriverPortal.jsx      # Driver-side portal
+│   ├── components/               # 18 reusable components
+│   │   ├── Navbar.jsx            # Top navigation (responsive, dark mode toggle)
+│   │   ├── Footer.jsx            # Footer with links
+│   │   ├── HeroBooking.jsx       # Hero section with inline booking form
+│   │   ├── WhyChooseUs.jsx       # USP section
+│   │   ├── CarCategories.jsx     # Car fleet showcase
+│   │   ├── HowItWorks.jsx        # Step-by-step process
+│   │   ├── RouteCoverage.jsx     # Gujarat route coverage map/display
+│   │   ├── Testimonials.jsx      # Customer reviews
+│   │   ├── MobileAppPromo.jsx    # App download CTA
+│   │   ├── BookingWizard.jsx     # Multi-step booking form
+│   │   ├── FareCalculator.jsx    # Interactive fare calculator
+│   │   ├── FareBreakdownCard.jsx # Fare details display
+│   │   ├── DriverTier.jsx        # Driver tier selection UI
+│   │   ├── DriverRating.jsx      # Post-ride rating component
+│   │   ├── FakeRazorpayModal.jsx # Simulated Razorpay payment modal
+│   │   ├── Invoice.jsx           # Payment receipt/invoice
+│   │   ├── LoadingSkeletons.jsx  # Skeleton loading states
+│   │   └── ToastNotification.jsx # Toast notification system
+│   ├── redux/                    # 8 Redux slices
+│   │   ├── store.js              # Redux store configuration
+│   │   ├── authSlice.js          # Authentication (demo accounts + OTP)
+│   │   ├── bookingSlice.js       # Booking CRUD + localStorage
+│   │   ├── fareSlice.js          # Admin-adjustable per-km pricing
+│   │   ├── paymentSlice.js       # Payment records
+│   │   ├── driverSlice.js        # Driver management + ride assignment
+│   │   ├── notificationSlice.js  # Toast notifications
+│   │   └── ratingSlice.js        # Driver ratings/reviews
+│   ├── hooks/                    # 4 custom hooks
+│   │   ├── useAutoAssignDriver.js       # Auto-assign driver + simulate ride lifecycle
+│   │   ├── useBookingStatusSimulation.js # Simulate booking status changes
+│   │   ├── useFareCalculation.js        # Calculate fare with all variables
+│   │   └── useScrollPosition.js         # Track scroll position (for navbar effects)
+│   ├── data/                     # Static data
+│   │   ├── cars.js               # 5 car categories with pricing
+│   │   └── drivers.js            # 4 driver tiers with multipliers
+│   └── utils/                    # Utility functions
+│       ├── distanceMatrix.js     # Gujarat city distance lookup table
+│       ├── fareCalculator.js     # Fare calculation formula
+│       └── generatePaymentId.js  # Random payment ID generator
+```
+
+---
+
+## Pages & Features
+
+### 1. Home Page (`/`)
+The landing page with 7 sections:
+- **HeroBooking**: Full-screen hero with background gradient, tagline, and an inline quick-booking form (from/to city, trip type)
+- **WhyChooseUs**: Feature highlights (GPS tracking, verified drivers, 24/7 support, etc.)
+- **CarCategories**: Showcase of 5 car types (Mini, Sedan, SUV, Premium SUV, Luxury)
+- **HowItWorks**: 3-step process (Book → Pay → Ride)
+- **RouteCoverage**: Display of covered Gujarat routes
+- **Testimonials**: Customer review cards
+- **MobileAppPromo**: App download CTA section
+
+### 2. Booking Page (`/booking`)
+A **multi-step booking wizard** (BookingWizard component):
+- **Step 1**: Select pickup city & drop-off city (22 Gujarat cities supported)
+- **Step 2**: Choose car category (Mini ₹10/km → Luxury ₹30/km)
+- **Step 3**: Select driver tier (Bronze/Silver/Gold/Platinum — multiplier from 1.0x to 1.08x)
+- **Step 4**: Trip type selection (one-way vs round-trip)
+- **Step 5**: Review fare breakdown and confirm
+- Real-time fare calculation using the distance matrix + per-km pricing + driver multiplier + toll estimates + driver stay charges
+
+### 3. Payment Page (`/payment`)
+- Displays pending booking details
+- **Fake Razorpay Modal**: Simulates Razorpay payment gateway UI (card/UPI/netbanking options)
+- On "payment success": records payment, confirms booking, auto-assigns driver
+- Generates a downloadable **Invoice** with all fare details
+
+### 4. Login Page (`/login`)
+- **Email/password login** with 2 demo accounts:
+  - Customer: `demo@rajmarg.com` / `123456`
+  - Admin: `admin@rajmarg.com` / `admin123`
+- **OTP-based login**: Enter phone → receive fake OTP → login
+- Premium dark UI with glassmorphism
+
+### 5. Register Page (`/register`)
+- New user registration form (name, email, password, phone)
+- Stores user in Redux + localStorage
+
+### 6. Customer Dashboard (`/dashboard`)
+- View all past bookings (with status: pending/confirmed/completed/cancelled)
+- Cancel pending bookings
+- Rate completed rides (1-5 stars + comment)
+- View payment history
+- Account information display
+
+### 7. Admin Panel (`/admin`)
+- **Booking Management**: View all bookings, filter by status, update statuses
+- **Fare Management**: Adjust per-km pricing for each car category in real-time
+- **Driver Management**: View mock driver profiles, tiers, ratings
+- **Revenue Dashboard**: Basic stats (total bookings, revenue, etc.)
+- Reset prices to defaults
+
+### 8. Live Tracking Page (`/live-tracking`)
+- Simulated live ride tracking interface
+- Shows driver info (name, photo, vehicle, phone)
+- Animated ride status progression (Confirmed → On The Way → Arrived → Completed)
+- No real GPS/map integration — purely UI simulation
+
+### 9. Driver Portal (`/driver-portal`)
+- **Driver login** with demo accounts (e.g., `driver@rajmarg.com` / `123456`)
+- View assigned rides
+- Accept/reject ride requests
+- Update ride status (in progress → completed)
+- View earnings and rating summary
+
+---
+
+## Business Logic
+
+### Fare Calculation Formula
+```
+Total = (Distance × PerKmPrice × DriverMultiplier) + TollEstimate + DriverStayCharge
+```
+
+- **Distance**: Looked up from a hardcoded Gujarat distance matrix (70+ city pairs)
+- **PerKm Price**: Varies by car category (₹10 to ₹30/km), admin-adjustable
+- **Driver Multiplier**: Based on driver tier — Bronze (1.0x), Silver (1.03x), Gold (1.05x), Platinum (1.08x)
+- **Toll Estimate**: Distance-based tiers (0-50km: ₹0, 50-150km: ₹80, 150-300km: ₹180, 300-500km: ₹320, 500+km: ₹450)
+- **Driver Stay Charge**: ₹800 flat fee for round trips > 250km one-way
+
+### Car Categories
+| Category | Per Km | Seats | Features |
+|---|---|---|---|
+| Mini | ₹10 | 4 | AC, Budget-Friendly |
+| Sedan | ₹14 | 4 | AC, Extra Legroom, Highway Ready |
+| SUV | ₹18 | 6 | AC, Large Boot, Family-Friendly |
+| Premium SUV | ₹22 | 6 | Leather Interior, Premium Sound |
+| Luxury | ₹30 | 4 | Chauffeur, Refreshments, WiFi |
+
+### Driver Tiers
+| Tier | Multiplier | Requirements |
+|---|---|---|
+| Bronze | 1.0x | New verified drivers |
+| Silver | 1.03x | 100+ rides, 4.5+ rating |
+| Gold | 1.05x | 500+ rides, 4.7+ rating |
+| Platinum | 1.08x | 1000+ rides, 4.9+ rating |
+
+### Supported Cities (22)
+Ahmedabad, Surat, Vadodara, Rajkot, Gandhinagar, Bhavnagar, Jamnagar, Junagadh, Dwarka, Somnath, Kutch (Bhuj), Anand, Nadiad, Morbi, Mehsana, Navsari, Valsad, Bharuch, Porbandar, Mount Abu, Statue of Unity, Mumbai
+
+### Auto Ride Simulation
+After payment, the system automatically:
+1. Assigns a random available driver
+2. After 5s → toast "Driver is on the way!"
+3. After 10s → toast "Driver has arrived!"
+4. After 15s → toast "Ride completed! Rate your experience."
+
+---
+
+## State Management (Redux Toolkit)
+
+7 Redux slices all persisted to **localStorage**:
+
+| Slice | Key State | Purpose |
+|---|---|---|
+| `auth` | user, isAuthenticated | Customer login/register/logout |
+| `booking` | bookings[], currentBooking | Booking CRUD with status tracking |
+| `fare` | prices{} | Admin-adjustable per-km prices per car |
+| `payment` | payments[], pendingPayment | Payment records |
+| `driver` | drivers[], currentDriver, assignedBookings | Driver profiles, auth, ride assignments |
+| `notification` | toasts[] | Toast notification queue |
+| `rating` | ratings[] | Driver rating submissions |
+
+---
+
+## Design System & Theme
+
+### Color Palette
+- **Cream/Light**: `#FAFAF7` (background), `#F0EDE6` (dark cream)
+- **Saffron/Gold**: `#C9A84C`, `#D4AF37`, `#B8943F`, `#E8C547` (accent/brand)
+- **Royal Navy/Charcoal**: `#0A1628`, `#0D1B2A`, `#0B1120` (dark backgrounds)
+- **Slate**: `#94A3B8` (secondary text)
+
+### Typography
+- **Display**: Playfair Display (serif) — headings, hero text
+- **Body**: Inter (sans-serif) — general text
+- **Alternative**: DM Sans — loaded but used sparingly
+
+### Design Features
+- **Dark mode** toggle support (via class-based switching)
+- **Glassmorphism** cards (`backdrop-blur`, semi-transparent backgrounds)
+- **Gold glow effects** on cards and buttons
+- **Gujarati cultural pattern** backgrounds (subtle radial gradients)
+- **Framer Motion page transitions** (fade + slide)
+- **Custom scrollbar** (gold-tinted thin scrollbar)
+- **Floating gold particles** animation
+- **Premium gradient buttons** (gold gradient with charcoal text)
+- **PWA support** (installable, offline caching for fonts and images)
+
+---
+
+## Current Limitations / Areas for Improvement
+
+1. **No real backend** — Everything is mock data + localStorage. No database, no real API calls.
+2. **No real authentication** — Hardcoded demo accounts, no JWT/session management, no password hashing.
+3. **No real payment gateway** — Fake Razorpay modal, no actual money processing.
+4. **No real maps/GPS** — Static distance matrix instead of Google Maps API, no live location tracking.
+5. **No real-time features** — No WebSocket/SSE for live updates between driver and customer.
+6. **No route protection** — Any page is accessible without login (no auth guards on routes).
+7. **Single booking page is just a wrapper** — Booking.jsx only renders BookingWizard, may need direct access to booking states.
+8. **No search/filter on cities** — City selection is basic dropdown, no autocomplete.
+9. **No booking history export** — No PDF/CSV download of past rides.
+10. **No responsive testing evidence** — Responsive classes are used but thorough mobile testing may be needed.
+11. **No error boundaries** — No React error boundary components for graceful error handling.
+12. **No unit/integration tests** — No test files or testing framework configured.
+13. **No i18n/localization** — Only English, no Gujarati or Hindi language support.
+14. **Images from Unsplash/RandomUser** — Car images are Unsplash URLs, driver photos from randomuser.me (may break if services change).
+15. **No SEO optimization** — Single `index.html`, no SSR/SSG for search engine crawling.
+
+---
+
+## How to Run
+
+```bash
+cd rajmarg-elite
+npm install
+npm run dev          # Starts Vite dev server (usually http://localhost:5173)
+npm run build        # Production build to /dist
+npm run preview      # Preview production build
+```
+
+---
+
+## Demo Credentials
+
+| Role | Email | Password |
+|---|---|---|
+| Customer | demo@rajmarg.com | 123456 |
+| Admin | admin@rajmarg.com | admin123 |
+| Driver | driver@rajmarg.com | 123456 |
+
+---
+
+*This overview covers the complete architecture, features, business logic, design system, and known limitations of the RajMarg Elite project. Use this to get targeted improvement suggestions.*

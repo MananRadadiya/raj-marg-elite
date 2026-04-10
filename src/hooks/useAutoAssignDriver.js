@@ -11,6 +11,11 @@ import { addToast } from '../redux/notificationSlice';
 export default function useAutoAssignDriver() {
   const dispatch = useDispatch();
   const { drivers } = useSelector((s) => s.driver);
+  const RIDE_TIMINGS_MS = {
+    driverOnTheWay: 15000,
+    driverArrived: 45000,
+    rideCompleted: 120000,
+  };
 
   const assignAndSimulate = useCallback(
     (booking) => {
@@ -46,15 +51,15 @@ export default function useAutoAssignDriver() {
       /* Simulate auto-progression */
       setTimeout(() => {
         dispatch(addToast({ message: `${driver.name} is on the way!`, type: 'driver' }));
-      }, 5000);
+      }, RIDE_TIMINGS_MS.driverOnTheWay);
 
       setTimeout(() => {
         dispatch(addToast({ message: `${driver.name} has arrived!`, type: 'driver' }));
-      }, 10000);
+      }, RIDE_TIMINGS_MS.driverArrived);
 
       setTimeout(() => {
         dispatch(addToast({ message: 'Ride completed! Rate your experience.', type: 'ride' }));
-      }, 15000);
+      }, RIDE_TIMINGS_MS.rideCompleted);
     },
     [dispatch, drivers]
   );

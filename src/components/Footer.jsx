@@ -4,8 +4,11 @@ import { motion } from 'framer-motion';
 const quickLinks = [
   { to: '/', label: 'Home' },
   { to: '/booking', label: 'Book a Ride' },
-  { to: '/dashboard', label: 'Dashboard' },
-  { to: '/driver-portal', label: 'Driver Portal' },
+  { to: '/tour-packages', label: 'Tour Packages' },
+  { to: '/drivers', label: 'Our Drivers' },
+  { to: '/about', label: 'About Us' },
+  { to: '/contact', label: 'Contact' },
+  { to: '/faq', label: 'FAQ' },
 ];
 
 const routes = [

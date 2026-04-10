@@ -6,6 +6,11 @@ import paymentReducer from './paymentSlice';
 import driverReducer from './driverSlice';
 import notificationReducer from './notificationSlice';
 import ratingReducer from './ratingSlice';
+import promoReducer from './promoSlice';
+import loyaltyReducer from './loyaltySlice';
+import profileReducer from './profileSlice';
+import chatReducer from './chatSlice';
+import subscriptionReducer from './subscriptionSlice';
 
 const store = configureStore({
   reducer: {
@@ -16,6 +21,11 @@ const store = configureStore({
     driver: driverReducer,
     notification: notificationReducer,
     rating: ratingReducer,
+    promo: promoReducer,
+    loyalty: loyaltyReducer,
+    profile: profileReducer,
+    chat: chatReducer,
+    subscription: subscriptionReducer,
   },
 });
 

@@ -4,7 +4,7 @@ import { updateBookingStatus } from '../redux/bookingSlice';
 
 /**
  * Simulates booking status progression:
- * pending → confirmed (after 5s) → completed (after 10s)
+ * pending → confirmed (after 5s) → completed (after 90s)
  */
 export default function useBookingStatusSimulation(bookingId, currentStatus) {
   const dispatch = useDispatch();
@@ -20,7 +20,7 @@ export default function useBookingStatusSimulation(bookingId, currentStatus) {
     } else if (currentStatus === 'confirmed') {
       timerRef.current = setTimeout(() => {
         dispatch(updateBookingStatus({ id: bookingId, status: 'completed' }));
-      }, 10000);
+      }, 90000);
     }
 
     return () => {

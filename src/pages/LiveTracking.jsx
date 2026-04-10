@@ -5,7 +5,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { updateBookingStatus } from '../redux/bookingSlice';
 import { updateRideStatus } from '../redux/driverSlice';
 import { addToast } from '../redux/notificationSlice';
+import { startChat } from '../redux/chatSlice';
 import DriverRating from '../components/DriverRating';
+import ChatInterface from '../components/ChatInterface';
 
 const STATUS_FLOW = ['confirmed', 'on-the-way', 'arrived', 'completed'];
 const STATUS_LABELS = {
@@ -19,6 +21,22 @@ const STATUS_ICONS = {
   'on-the-way': '🚗',
   arrived: '📍',
   completed: '🏁',
+};
+
+const ETA_START_SECONDS = 120;
+const RIDE_TIMINGS_MS = {
+  confirmed: {
+    onTheWay: 15000,
+    arrived: 45000,
+    completed: 120000,
+  },
+  'on-the-way': {
+    arrived: 15000,
+    completed: 90000,
+  },
+  arrived: {
+    completed: 45000,
+  },
 };
 
 const CITIES = [
@@ -35,8 +53,9 @@ export default function LiveTracking() {
 
   const [carPosition, setCarPosition] = useState(0);
   const [currentStatusIdx, setCurrentStatusIdx] = useState(0);
-  const [etaSeconds, setEtaSeconds] = useState(45);
+  const [etaSeconds, setEtaSeconds] = useState(ETA_START_SECONDS);
   const [showRating, setShowRating] = useState(false);
+  const [chatOpen, setChatOpen] = useState(false);
   const intervalRef = useRef(null);
   const etaRef = useRef(null);
 
@@ -52,6 +71,13 @@ export default function LiveTracking() {
   );
 
   const trackingBooking = activeBooking || latestCompleted;
+
+  // Initialize chat when ride is active
+  useEffect(() => {
+    if (activeBooking && assignment) {
+      dispatch(startChat(activeBooking.id));
+    }
+  }, [activeBooking?.id, assignment?.driverId]);
 
   useEffect(() => {
     if (!activeBooking) return;
@@ -69,7 +95,7 @@ export default function LiveTracking() {
           if (assignment) dispatch(updateRideStatus({ bookingId: activeBooking.id, status: 'on-the-way' }));
           dispatch(addToast({ message: 'Your driver is on the way!', type: 'driver' }));
           setCurrentStatusIdx(1);
-        }, 5000)
+        }, RIDE_TIMINGS_MS.confirmed.onTheWay)
       );
       timers.push(
         setTimeout(() => {
@@ -77,7 +103,7 @@ export default function LiveTracking() {
           if (assignment) dispatch(updateRideStatus({ bookingId: activeBooking.id, status: 'arrived' }));
           dispatch(addToast({ message: 'Your driver has arrived!', type: 'driver' }));
           setCurrentStatusIdx(2);
-        }, 10000)
+        }, RIDE_TIMINGS_MS.confirmed.arrived)
       );
       timers.push(
         setTimeout(() => {
@@ -86,7 +112,7 @@ export default function LiveTracking() {
           dispatch(addToast({ message: 'Ride completed! Rate your driver.', type: 'ride' }));
           setCurrentStatusIdx(3);
           setShowRating(true);
-        }, 15000)
+        }, RIDE_TIMINGS_MS.confirmed.completed)
       );
     } else if (activeBooking.status === 'on-the-way') {
       timers.push(
@@ -95,7 +121,7 @@ export default function LiveTracking() {
           if (assignment) dispatch(updateRideStatus({ bookingId: activeBooking.id, status: 'arrived' }));
           dispatch(addToast({ message: 'Your driver has arrived!', type: 'driver' }));
           setCurrentStatusIdx(2);
-        }, 5000)
+        }, RIDE_TIMINGS_MS['on-the-way'].arrived)
       );
       timers.push(
         setTimeout(() => {
@@ -104,7 +130,7 @@ export default function LiveTracking() {
           dispatch(addToast({ message: 'Ride completed! Rate your driver.', type: 'ride' }));
           setCurrentStatusIdx(3);
           setShowRating(true);
-        }, 10000)
+        }, RIDE_TIMINGS_MS['on-the-way'].completed)
       );
     } else if (activeBooking.status === 'arrived') {
       timers.push(
@@ -114,7 +140,7 @@ export default function LiveTracking() {
           dispatch(addToast({ message: 'Ride completed! Rate your driver.', type: 'ride' }));
           setCurrentStatusIdx(3);
           setShowRating(true);
-        }, 5000)
+        }, RIDE_TIMINGS_MS.arrived.completed)
       );
     }
 
@@ -142,7 +168,7 @@ export default function LiveTracking() {
   /* ETA countdown */
   useEffect(() => {
     if (!activeBooking) return;
-    setEtaSeconds(45);
+    setEtaSeconds(ETA_START_SECONDS);
     etaRef.current = setInterval(() => {
       setEtaSeconds((prev) => {
         if (prev <= 0) {
@@ -354,6 +380,18 @@ export default function LiveTracking() {
                 </span>
               </div>
             </div>
+
+            {/* Chat Button */}
+            {!isCompleted && (
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => setChatOpen(!chatOpen)}
+                className="w-full mt-4 py-3 rounded-xl bg-gradient-to-r from-charcoal to-royal-navy text-white font-semibold text-sm border-none cursor-pointer flex items-center justify-center gap-2 hover:shadow-lg transition-shadow"
+              >
+                <span>💬</span> Chat with {assignment.driverName}
+              </motion.button>
+            )}
           </motion.div>
         )}
 
@@ -396,6 +434,31 @@ export default function LiveTracking() {
           />
         )}
       </AnimatePresence>
+
+      {/* Floating Chat Toggle */}
+      {assignment && !isCompleted && !chatOpen && (
+        <motion.button
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          onClick={() => setChatOpen(true)}
+          className="fixed bottom-24 right-6 z-40 w-14 h-14 rounded-2xl bg-gradient-to-br from-charcoal to-royal-navy text-white shadow-xl shadow-charcoal/20 border-none cursor-pointer flex items-center justify-center group"
+        >
+          <span className="text-xl">💬</span>
+          <div className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-green-400 border-2 border-white dark:border-charcoal" />
+        </motion.button>
+      )}
+
+      {/* Chat Interface */}
+      {assignment && (
+        <ChatInterface
+          driverName={assignment.driverName}
+          driverPhoto={assignment.driverPhoto}
+          isOpen={chatOpen}
+          onClose={() => setChatOpen(false)}
+        />
+      )}
     </div>
   );
 }
